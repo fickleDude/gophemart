@@ -8,6 +8,12 @@ import (
 	"github.com/fickleDude/gophemart/internal/repository"
 )
 
+type WithdrawServiceInterface interface {
+	GetWithdraws(login string) ([]*model.Withdraw, error)
+	AddWithdraw(withdraw model.Withdraw) error
+	ValidateOrder(number string) error
+}
+
 type WithdrawService struct {
 	repository *repository.WithdrawRepository
 }

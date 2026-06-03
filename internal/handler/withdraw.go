@@ -10,22 +10,22 @@ import (
 )
 
 type WithdrawHandler struct {
-	withdrawService *service.WithdrawService
-	balanceService  *service.BalanceService
+	withdrawService service.WithdrawServiceInterface
+	balanceService  service.BalanceServiceInterface
 }
 
-func NewWithdrawHandler(withdrawService *service.WithdrawService, balanceService *service.BalanceService) *WithdrawHandler {
+func NewWithdrawHandler(withdrawService service.WithdrawServiceInterface, balanceService service.BalanceServiceInterface) *WithdrawHandler {
 	return &WithdrawHandler{withdrawService: withdrawService, balanceService: balanceService}
 }
 
 func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Request) {
-	withdraws, err := w.withdrawService.GetWithdraws("123")
+	user := req.Header.Get("Authorization")
+	withdraws, err := w.withdrawService.GetWithdraws(user)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if withdraws == nil {
-		res.Write([]byte(" нет ни одного списания"))
 		res.WriteHeader(http.StatusNoContent)
 		return
 	}
@@ -56,7 +56,8 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	balance, err := w.balanceService.GetBalance("123")
+	user := req.Header.Get("Authorization")
+	balance, err := w.balanceService.GetBalance(user)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -65,7 +66,8 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		res.WriteHeader(http.StatusPaymentRequired)
 		return
 	}
-	withdraw.Login = "123"
+
+	withdraw.Login = user
 	err = w.withdrawService.AddWithdraw(withdraw)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)

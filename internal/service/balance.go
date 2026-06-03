@@ -5,6 +5,10 @@ import (
 	"github.com/fickleDude/gophemart/internal/repository"
 )
 
+type BalanceServiceInterface interface {
+	GetBalance(login string) (*model.Balance, error)
+}
+
 type BalanceService struct {
 	orderRepository    *repository.OrderRepository
 	withdrawRepository *repository.WithdrawRepository
