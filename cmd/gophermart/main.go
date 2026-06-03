@@ -17,20 +17,17 @@ func main() {
 	orderRepository := repository.NewOrderRepository(storage)
 	withdrawRepository := repository.NewWithdrawRepository(storage)
 	userRepository := repository.NewUserRepository()
-	interApiRepository := repository.NewInternalApiRepository(storage)
 	//services
 	orderService := service.NewOrderService(orderRepository)
 	withdrawService := service.NewWithdrawService(withdrawRepository)
 	balanceService := service.NewBalaneService(orderRepository, withdrawRepository)
 	userService := service.NewUserService(userRepository)
-	internalApiService := service.NewInternalApiService(interApiRepository)
 
 	//handlers
 	orderHandler := handler.NewOrderHandler(orderService)
 	withdrawHandler := handler.NewWithdrawHandler(withdrawService, balanceService)
 	userHandler := handler.NewUserHandler(userService)
 	balanceHandler := handler.NewBalanceHandler(balanceService)
-	internalApiHandler := handler.NewInternalApiHandler(internalApiService)
 
 	r := chi.NewRouter()
 	r.Route("/api", func(r chi.Router) {
@@ -57,16 +54,6 @@ func main() {
 			})
 		})
 	})
-
-	internalRouter := chi.NewRouter()
-	internalRouter.Get("/api/orders/{number}", internalApiHandler.GetData)
-
-	go func() {
-		err := http.ListenAndServe("localhost:8081", internalRouter)
-		if err != nil {
-			panic(err)
-		}
-	}()
 
 	//start server
 	err := http.ListenAndServe("localhost:8080", r)

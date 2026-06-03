@@ -1,0 +1,32 @@
+package main
+
+import (
+	"net/http"
+
+	"github.com/fickleDude/gophemart/internal/config/db"
+	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/repository"
+	"github.com/fickleDude/gophemart/internal/service"
+	"github.com/go-chi/chi"
+)
+
+func main() {
+	//repository
+	storage := db.GetDBConnection()
+	defer db.CloseDBConnection()
+	interApiRepository := repository.NewInternalApiRepository(storage)
+	//services
+	internalApiService := service.NewInternalApiService(interApiRepository)
+
+	//handlers
+	internalApiHandler := handler.NewInternalApiHandler(internalApiService)
+
+	r := chi.NewRouter()
+	r.Get("/api/orders/{number}", internalApiHandler.GetData)
+
+	//start server
+	err := http.ListenAndServe("localhost:8081", r)
+	if err != nil {
+		panic(err)
+	}
+}
