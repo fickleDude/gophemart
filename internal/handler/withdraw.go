@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/service"
 )
@@ -50,8 +51,8 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	err := w.withdrawService.ValidateOrder(withdraw.Order)
-	if err != nil {
+	isValid := helpers.LuhnAlgorithm(withdraw.Order)
+	if !isValid {
 		res.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}

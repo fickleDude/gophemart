@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/service"
 )
@@ -46,9 +47,13 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	number, _ := io.ReadAll(req.Body)
-	err := o.orderService.ValidateOrder(string(number))
+	number, err := io.ReadAll(req.Body)
 	if err != nil {
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	isValid := helpers.LuhnAlgorithm(string(number))
+	if !isValid {
 		res.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
