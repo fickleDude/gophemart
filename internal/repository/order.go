@@ -54,9 +54,9 @@ func (o *OrderRepository) GetOrders(login string) ([]*model.Order, error) {
 }
 
 // загрузка пользователем номера заказа для расчёта
-func (o *OrderRepository) AddOrder(login string, number string) error {
+func (o *OrderRepository) AddOrder(login string, number string, uploadedAt string) error {
 	_, err := o.db.Exec(`INSERT INTO orders (number, login, uploaded_at)
-						 VALUES ($1, $2, now());`, number, login)
+						 VALUES ($1, $2, $3);`, number, login, uploadedAt)
 	if err != nil {
 		return err
 	}

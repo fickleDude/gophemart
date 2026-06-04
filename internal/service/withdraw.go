@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
@@ -29,7 +30,7 @@ func (w *WithdrawService) GetWithdraws(login string) ([]*model.Withdraw, error) 
 
 // запрос на списание баллов + списание баллов
 func (w *WithdrawService) AddWithdraw(withdraw model.Withdraw) error {
-	return w.repository.AddWithdraw(withdraw.Login, withdraw.Order, withdraw.Sum)
+	return w.repository.AddWithdraw(withdraw.Login, withdraw.Order, withdraw.Sum, time.Now().Format(time.RFC3339))
 }
 
 // проверка номера на корректность (алгоритма Луна)

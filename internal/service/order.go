@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	model "github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
@@ -71,7 +72,7 @@ func (o *OrderService) GetOrders(login string) ([]*model.Order, error) {
 
 // загрузка пользователем номера заказа для расчёта + пополнение баллов
 func (o *OrderService) AddOrder(order model.Order) error {
-	return o.repository.AddOrder(order.Login, order.Number)
+	return o.repository.AddOrder(order.Login, order.Number, time.Now().Format(time.RFC3339))
 }
 
 // проверка номера на корректность (алгоритма Луна)

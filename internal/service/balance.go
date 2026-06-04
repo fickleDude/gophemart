@@ -1,6 +1,8 @@
 package service
 
 import (
+	"net/http"
+
 	model "github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
 )
@@ -33,9 +35,14 @@ func (b *BalanceService) GetBalance(login string) (*model.Balance, error) {
 
 	//count accrual
 	accrual := 0.0
+	client := http.Client{}
 	for _, o := range orders {
-		if o.Status == "PROCESSED" {
-			accrual += o.Accrual
+		orderDetails, err := getOrderAccrual(o.Number, client)
+		if err != nil {
+			return nil, err
+		}
+		if orderDetails.Status == "PROCESSED" {
+			accrual += orderDetails.Accrual
 		}
 	}
 	//count withdraws

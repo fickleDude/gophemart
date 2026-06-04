@@ -39,9 +39,9 @@ func (w *WithdrawRepository) GetWithdraws(login string) ([]*model.Withdraw, erro
 }
 
 // запрос на списание баллов
-func (w *WithdrawRepository) AddWithdraw(login string, order string, sum float64) error {
+func (w *WithdrawRepository) AddWithdraw(login string, order string, sum float64, processedAt string) error {
 	_, err := w.db.Exec(`INSERT INTO withdraws (order_num, sum, login, processed_at)
-						 VALUES ($1, $2, $3, now());`, order, sum, login)
+						 VALUES ($1, $2, $3, $4);`, order, sum, login, processedAt)
 	if err != nil {
 		return err
 	}

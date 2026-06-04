@@ -20,15 +20,11 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 	//init handler
 	service := mocks.MockWithdrawServiceInterface{}
 	service.On("GetWithdraws", "1").Return(nil, fmt.Errorf("test"))
-
-	str := "2026-05-25 13:51:12.6293"
-	layout := "2006-01-02 15:04:05"
-	processedAt, _ := time.Parse(layout, str)
-
+	processedAt := time.Date(2026, time.May, 25, 13, 51, 12, 6293, time.UTC)
 	service.On("GetWithdraws", "2").Return([]*model.Withdraw{{
 		Order:       "2377225624",
 		Sum:         751,
-		ProcessedAt: processedAt,
+		ProcessedAt: processedAt.Format(time.RFC3339),
 	}}, nil)
 
 	service.On("GetWithdraws", "3").Return(nil, nil)
@@ -64,7 +60,7 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 								{
 									"order": "2377225624",
 									"sum": 751,
-									"processed_at": "2026-05-25T13:51:12.6293Z"
+									"processed_at": "2026-05-25T13:51:12Z"
 								}
 							]`,
 			},

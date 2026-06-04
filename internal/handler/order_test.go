@@ -20,13 +20,9 @@ func TestOrderHandler_GetOrders(t *testing.T) {
 	//init handler
 	service := mocks.MockOrderServiceInterface{}
 	service.On("GetOrders", "1").Return(nil, fmt.Errorf("test"))
-
-	str := "2026-05-25 13:51:12.6293"
-	layout := "2006-01-02 15:04:05"
-	uploadedAt, _ := time.Parse(layout, str)
-
+	uploadedAt := time.Date(2026, time.May, 25, 13, 51, 12, 6293, time.UTC)
 	service.On("GetOrders", "2").Return([]*model.Order{
-		{Login: "2", Number: "1", Status: "PROCESSED", Accrual: 500, UploadedAt: uploadedAt},
+		{Login: "2", Number: "1", Status: "PROCESSED", Accrual: 500, UploadedAt: uploadedAt.Format(time.RFC3339)},
 	}, nil)
 
 	service.On("GetOrders", "3").Return(nil, nil)
@@ -63,7 +59,7 @@ func TestOrderHandler_GetOrders(t *testing.T) {
 									"number": "1",
 									"status": "PROCESSED",
 									"accrual": 500,
-									"uploaded_at": "2026-05-25T13:51:12.6293Z"
+									"uploaded_at": "2026-05-25T13:51:12Z"
 								}
 							]`,
 			},
