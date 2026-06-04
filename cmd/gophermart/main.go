@@ -1,22 +1,29 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/fickleDude/gophemart/internal/config/db"
 	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/middleware"
 	"github.com/fickleDude/gophemart/internal/repository"
 	"github.com/fickleDude/gophemart/internal/service"
 	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	//enviroment
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
 	//repository
 	storage := db.GetDBConnection()
 	defer db.CloseDBConnection()
 	orderRepository := repository.NewOrderRepository(storage)
 	withdrawRepository := repository.NewWithdrawRepository(storage)
-	userRepository := repository.NewUserRepository()
+	userRepository := repository.NewUserRepository(storage)
 	//services
 	orderService := service.NewOrderService(orderRepository)
 	withdrawService := service.NewWithdrawService(withdrawRepository)
@@ -30,6 +37,7 @@ func main() {
 	balanceHandler := handler.NewBalanceHandler(balanceService)
 
 	r := chi.NewRouter()
+	r.Use(middleware.AuthenticationMiddleware)
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/user", func(r chi.Router) {
 			//регистрация пользователя

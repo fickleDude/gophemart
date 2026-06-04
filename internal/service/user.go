@@ -17,3 +17,8 @@ func NewUserService(repository *repository.UserRepository) *UserService {
 func (u *UserService) AddUser(user model.User) error {
 	return u.repository.AddUser(user.Login, user.Password)
 }
+
+// проверка пользователя
+func (u *UserService) GetUser(login string) (*model.User, error) {
+	return u.repository.GetUser(login)
+}

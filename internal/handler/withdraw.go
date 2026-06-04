@@ -20,8 +20,12 @@ func NewWithdrawHandler(withdrawService service.WithdrawServiceInterface, balanc
 }
 
 func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Request) {
-	user := req.Header.Get("Authorization")
-	withdraws, err := w.withdrawService.GetWithdraws(user)
+	user, err := req.Cookie("user")
+	if err != nil {
+		res.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	withdraws, err := w.withdrawService.GetWithdraws(user.Value)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -57,8 +61,12 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	user := req.Header.Get("Authorization")
-	balance, err := w.balanceService.GetBalance(user)
+	user, err := req.Cookie("user")
+	if err != nil {
+		res.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	balance, err := w.balanceService.GetBalance(user.Value)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -68,7 +76,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	withdraw.Login = user
+	withdraw.Login = user.Value
 	err = w.withdrawService.AddWithdraw(withdraw)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)

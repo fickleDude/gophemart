@@ -17,8 +17,12 @@ func NewBalanceHandler(balanceService service.BalanceServiceInterface) *BalanceH
 }
 
 func (b *BalanceHandler) GetBalance(res http.ResponseWriter, req *http.Request) {
-	user := req.Header.Get("Authorization")
-	balance, err := b.balanceService.GetBalance(user)
+	user, err := req.Cookie("user")
+	if err != nil {
+		res.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	balance, err := b.balanceService.GetBalance(user.Value)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
