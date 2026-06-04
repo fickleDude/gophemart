@@ -11,15 +11,16 @@ import (
 )
 
 type OrderHandler struct {
-	orderService *service.OrderService
+	orderService service.OrderServiceInterface
 }
 
-func NewOrderHandler(orderService *service.OrderService) *OrderHandler {
+func NewOrderHandler(orderService service.OrderServiceInterface) *OrderHandler {
 	return &OrderHandler{orderService: orderService}
 }
 
 func (o *OrderHandler) GetOrders(res http.ResponseWriter, req *http.Request) {
-	orders, error := o.orderService.GetOrders("123")
+	user := req.Header.Get("Authorization")
+	orders, error := o.orderService.GetOrders(user)
 	if error != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -57,8 +58,9 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	user := req.Header.Get("Authorization")
 	if existingOrder != nil {
-		if existingOrder.Login == "123" {
+		if existingOrder.Login == user {
 			res.WriteHeader(http.StatusOK)
 			return
 		} else {
@@ -68,7 +70,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//get status and accural form foreign service
-	order := model.Order{Login: "123", Number: string(number)}
+	order := model.Order{Login: user, Number: string(number)}
 	err = o.orderService.AddOrder(order)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)

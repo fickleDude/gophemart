@@ -9,15 +9,16 @@ import (
 )
 
 type BalanceHandler struct {
-	balanceService *service.BalanceService
+	balanceService service.BalanceServiceInterface
 }
 
-func NewBalanceHandler(balanceService *service.BalanceService) *BalanceHandler {
+func NewBalanceHandler(balanceService service.BalanceServiceInterface) *BalanceHandler {
 	return &BalanceHandler{balanceService: balanceService}
 }
 
 func (b *BalanceHandler) GetBalance(res http.ResponseWriter, req *http.Request) {
-	balance, err := b.balanceService.GetBalance("123")
+	user := req.Header.Get("Authorization")
+	balance, err := b.balanceService.GetBalance(user)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return

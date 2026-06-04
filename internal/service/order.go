@@ -10,6 +10,13 @@ import (
 	"github.com/fickleDude/gophemart/internal/repository"
 )
 
+type OrderServiceInterface interface {
+	GetOrder(number string) (*model.Order, error)
+	GetOrders(login string) ([]*model.Order, error)
+	AddOrder(order model.Order) error
+	ValidateOrder(number string) error
+}
+
 type OrderService struct {
 	repository *repository.OrderRepository
 }

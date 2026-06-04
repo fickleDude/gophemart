@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/fickleDude/gophemart/internal/handler"
-	mocks "github.com/fickleDude/gophemart/internal/mocks/service"
+	"github.com/fickleDude/gophemart/internal/mocks"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +18,7 @@ import (
 
 func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 	//init handler
-	service := mocks.MockWithdrawService{}
+	service := mocks.MockWithdrawServiceInterface{}
 	service.On("GetWithdraws", "1").Return(nil, fmt.Errorf("test"))
 
 	str := "2026-05-25 13:51:12.6293"
@@ -62,9 +62,9 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 				request: "/api/user/withdrawals",
 				response: `[
 								{
-									"Order": "2377225624",
-									"Sum": 751,
-									"ProcessedAt": "2026-05-25T13:51:12.6293Z"
+									"order": "2377225624",
+									"sum": 751,
+									"processed_at": "2026-05-25T13:51:12.6293Z"
 								}
 							]`,
 			},
@@ -97,6 +97,7 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 				resBody, err := io.ReadAll(res.Body)
 
 				require.NoError(t, err)
+				assert.Equal(t, res.Header.Get("Content-Type"), "application/json")
 				assert.JSONEq(t, test.want.response, string(resBody))
 			}
 		})
@@ -105,8 +106,8 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 
 func TestWithdrawHandler_AddWithdraw(t *testing.T) {
 	//init handler
-	withdrawService := mocks.MockWithdrawService{}
-	balanceService := mocks.MockBalanceService{}
+	withdrawService := mocks.MockWithdrawServiceInterface{}
+	balanceService := mocks.MockBalanceServiceInterface{}
 	withdrawService.On("ValidateOrder", "aaa").Return(fmt.Errorf("test"))
 	withdrawService.On("ValidateOrder", "1").Return(nil)
 	withdrawService.On("AddWithdraw", model.Withdraw{Login: "2", Order: "1", Sum: 751}).Return(nil)
