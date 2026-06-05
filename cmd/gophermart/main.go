@@ -7,6 +7,7 @@ import (
 	"github.com/fickleDude/gophemart/internal/handler"
 	"github.com/fickleDude/gophemart/internal/logger"
 	"github.com/fickleDude/gophemart/internal/middleware"
+	"github.com/fickleDude/gophemart/internal/migrations"
 	"github.com/fickleDude/gophemart/internal/repository"
 	"github.com/fickleDude/gophemart/internal/service"
 	"github.com/go-chi/chi"
@@ -24,9 +25,18 @@ func main() {
 		panic(err)
 	}
 	defer logger.Log.Sync()
-	//repository
+
 	storage := db.GetDBConnection()
 	defer db.CloseDBConnection()
+	//init db
+	m := migrations.GetMigrator()
+	if m != nil {
+		err := m.MigrateUp()
+		if err != nil {
+			panic("cannot init database")
+		}
+	}
+	//repository
 	orderRepository := repository.NewOrderRepository(storage)
 	withdrawRepository := repository.NewWithdrawRepository(storage)
 	userRepository := repository.NewUserRepository(storage)
