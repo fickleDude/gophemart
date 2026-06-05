@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/fickleDude/gophemart/internal/helpers"
+	"github.com/fickleDude/gophemart/internal/logger"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/service"
 )
@@ -25,12 +26,14 @@ func (u *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 
 	var user model.User
 	if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	isValid, err := u.service.ValidateUser(user)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -40,6 +43,7 @@ func (u *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 	}
 	tokenString, err := helpers.CreateJWTToken(user.Login)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -54,12 +58,14 @@ func (u *UserHandler) Register(res http.ResponseWriter, req *http.Request) {
 
 	var user model.User
 	if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	existingUser, err := u.service.GetUser(user.Login)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -69,6 +75,7 @@ func (u *UserHandler) Register(res http.ResponseWriter, req *http.Request) {
 	}
 	err = u.service.AddUser(user)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}

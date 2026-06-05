@@ -5,6 +5,7 @@ import (
 
 	"github.com/fickleDude/gophemart/internal/config/db"
 	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/logger"
 	"github.com/fickleDude/gophemart/internal/middleware"
 	"github.com/fickleDude/gophemart/internal/repository"
 	"github.com/fickleDude/gophemart/internal/service"
@@ -13,10 +14,16 @@ import (
 )
 
 func main() {
-	//enviroment
+	//config
 	if err := godotenv.Load(); err != nil {
 		panic("No .env file found")
 	}
+	//init logger
+	logLevel := "info"
+	if err := logger.Initialize(logLevel); err != nil {
+		panic(err)
+	}
+	defer logger.Log.Sync()
 	//repository
 	storage := db.GetDBConnection()
 	defer db.CloseDBConnection()

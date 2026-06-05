@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/fickleDude/gophemart/internal/helpers"
+	"github.com/fickleDude/gophemart/internal/logger"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/service"
 )
@@ -23,13 +24,15 @@ func (o *OrderHandler) GetOrders(res http.ResponseWriter, req *http.Request) {
 	//get login from token
 	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	login := helpers.GetUserLogin(token.Value)
 
-	orders, error := o.orderService.GetOrders(login)
-	if error != nil {
+	orders, err := o.orderService.GetOrders(login)
+	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -41,6 +44,7 @@ func (o *OrderHandler) GetOrders(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(orders); err != nil {
+		logger.Log.Error(err.Error())
 		//внутренняя ошибка сервера
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -56,6 +60,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 
 	number, err := io.ReadAll(req.Body)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,12 +72,14 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 
 	existingOrder, err := o.orderService.GetOrder(string(number))
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	//get login from token
 	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -91,6 +98,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 	order := model.Order{Login: login, Number: string(number)}
 	err = o.orderService.AddOrder(order)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}

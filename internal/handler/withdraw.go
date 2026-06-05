@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/fickleDude/gophemart/internal/helpers"
+	"github.com/fickleDude/gophemart/internal/logger"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/service"
 )
@@ -23,6 +24,7 @@ func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Reques
 	//get login from token
 	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -30,6 +32,7 @@ func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Reques
 
 	withdraws, err := w.withdrawService.GetWithdraws(login)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -40,6 +43,7 @@ func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Reques
 	res.Header().Set("Content-Type", "application/json")
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(withdraws); err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -54,6 +58,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 
 	var withdraw model.Withdraw
 	if err := json.NewDecoder(req.Body).Decode(&withdraw); err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,6 +72,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 	//get login from token
 	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -74,6 +80,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 
 	balance, err := w.balanceService.GetBalance(login)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -85,6 +92,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 	withdraw.Login = login
 	err = w.withdrawService.AddWithdraw(withdraw)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
