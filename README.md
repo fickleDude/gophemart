@@ -26,3 +26,4 @@ git fetch template && git checkout template/master .github
 
 client retry
 secure cookie
+key and log level to config

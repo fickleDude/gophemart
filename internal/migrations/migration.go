@@ -4,6 +4,7 @@ import (
 	"embed"
 	"sync"
 
+	"github.com/fickleDude/gophemart/internal/config"
 	"github.com/fickleDude/gophemart/internal/config/db"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
@@ -28,7 +29,8 @@ var (
 func GetMigrator() *Migrator {
 	once.Do(func() {
 		//init db driver
-		db, err := postgres.WithInstance(db.GetDBConnection(), &postgres.Config{})
+		cfg := config.GetConfig()
+		db, err := postgres.WithInstance(db.GetDBConnection(cfg.DatabaseURI()), &postgres.Config{})
 		if err != nil {
 			return
 		}

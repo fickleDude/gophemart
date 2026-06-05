@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/fickleDude/gophemart/internal/config"
 	"github.com/fickleDude/gophemart/internal/config/db"
 	"github.com/fickleDude/gophemart/internal/handler"
 	"github.com/fickleDude/gophemart/internal/logger"
@@ -19,6 +20,8 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		panic("No .env file found")
 	}
+	//config
+	cfg := config.GetConfig()
 	//init logger
 	logLevel := "info"
 	if err := logger.Initialize(logLevel); err != nil {
@@ -26,7 +29,7 @@ func main() {
 	}
 	defer logger.Log.Sync()
 
-	storage := db.GetDBConnection()
+	storage := db.GetDBConnection(cfg.DatabaseURI())
 	defer db.CloseDBConnection()
 	//init db
 	m := migrations.GetMigrator()
@@ -80,7 +83,7 @@ func main() {
 	})
 
 	//start server
-	err := http.ListenAndServe("localhost:8080", r)
+	err := http.ListenAndServe(cfg.RunAddr(), r)
 	if err != nil {
 		panic(err)
 	}

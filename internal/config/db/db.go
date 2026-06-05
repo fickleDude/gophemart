@@ -12,9 +12,9 @@ var (
 	once     sync.Once
 )
 
-func GetDBConnection() *sql.DB {
+func GetDBConnection(databaseURI string) *sql.DB {
 	once.Do(func() {
-		dataSourceName := "host=localhost port=5433 user=postgres password=postgres dbname=gophermart sslmode=disable"
+		dataSourceName := databaseURI
 		db, err := sql.Open("pgx", dataSourceName)
 		if err != nil {
 			panic(err.Error())

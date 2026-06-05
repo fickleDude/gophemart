@@ -16,7 +16,7 @@ type Claims struct {
 }
 
 func getJwtSecret() (string, error) {
-	secret, exists := os.LookupEnv("AUTH_SECRET")
+	secret, exists := os.LookupEnv("SECRET_KEY")
 	if !exists {
 		return "", fmt.Errorf("secret not found")
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/fickleDude/gophemart/internal/config"
 	"github.com/fickleDude/gophemart/internal/config/db"
 	"github.com/fickleDude/gophemart/internal/handler"
 	"github.com/fickleDude/gophemart/internal/repository"
@@ -12,7 +13,8 @@ import (
 
 func main() {
 	//repository
-	storage := db.GetDBConnection()
+	cfg := config.GetConfig()
+	storage := db.GetDBConnection(cfg.DatabaseURI())
 	defer db.CloseDBConnection()
 	interApiRepository := repository.NewInternalApiRepository(storage)
 	//services
