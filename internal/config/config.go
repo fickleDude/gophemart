@@ -24,7 +24,7 @@ func GetConfig() *Config {
 	initConfig.Do(func() {
 		config = &Config{
 			runAddr:              "localhost:8080",
-			accrualSystenAddress: "localhost:8081",
+			accrualSystenAddress: "localhost:8090",
 		}
 		config.parseFlags()
 		config.parseEnv()

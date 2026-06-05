@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 CREATE TABLE IF NOT EXISTS withdraws (
     order_num varchar unique,
-	number numeric ,
+	sum numeric ,
 	processed_at timestamp,
     login       varchar REFERENCES users (login)
 );

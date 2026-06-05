@@ -19,7 +19,7 @@ func NewOrderRepository(db *sql.DB) *OrderRepository {
 func (o *OrderRepository) GetOrder(number string) (*model.Order, error) {
 	var order model.Order
 	row := o.db.QueryRow("select number, uploaded_at, login from orders where number = $1", number)
-	err := row.Scan(&order.Number, order.UploadedAt, order.Login)
+	err := row.Scan(&order.Number, &order.UploadedAt, &order.Login)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

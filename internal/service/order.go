@@ -40,8 +40,10 @@ func (o *OrderService) GetOrders(login string) ([]*model.Order, error) {
 		if err != nil {
 			return nil, err
 		}
-		o.Accrual = orderDetails.Accrual
-		o.Status = orderDetails.Status
+		if orderDetails != nil {
+			o.Accrual = orderDetails.Accrual
+			o.Status = orderDetails.Status
+		}
 	}
 	return orders, nil
 }

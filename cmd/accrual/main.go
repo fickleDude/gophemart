@@ -27,7 +27,7 @@ func main() {
 	r.Get("/api/orders/{number}", internalApiHandler.GetData)
 
 	//start server
-	err := http.ListenAndServe("localhost:8081", r)
+	err := http.ListenAndServe(cfg.AccrualSystenAddress(), r)
 	if err != nil {
 		panic(err)
 	}
