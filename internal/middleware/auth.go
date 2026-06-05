@@ -11,7 +11,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isAuth := strings.Contains(r.URL.Path, "register") || strings.Contains(r.URL.Path, "login")
 		if !isAuth {
-			cookie, err := r.Cookie("token")
+			cookie, err := helpers.GetCookie(r, "token")
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return

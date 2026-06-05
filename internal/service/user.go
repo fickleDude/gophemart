@@ -1,6 +1,9 @@
 package service
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+
 	model "github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
 )
@@ -13,12 +16,31 @@ func NewUserService(repository *repository.UserRepository) *UserService {
 	return &UserService{repository: repository}
 }
 
+func getHash(password string) string {
+	src := []byte(password)
+	h := sha256.New()
+	h.Write(src)
+	dst := h.Sum(nil)
+	return hex.EncodeToString(dst)
+}
+
 // регистрация пользователя
 func (u *UserService) AddUser(user model.User) error {
-	return u.repository.AddUser(user.Login, user.Password)
+	passwordHash := getHash(user.Password)
+	return u.repository.AddUser(user.Login, passwordHash)
+}
+
+func (u *UserService) GetUser(login string) (*model.User, error) {
+	return u.repository.GetUser(login)
 }
 
 // проверка пользователя
-func (u *UserService) GetUser(login string) (*model.User, error) {
-	return u.repository.GetUser(login)
+func (u *UserService) ValidateUser(user model.User) (bool, error) {
+	repoUser, err := u.repository.GetUser(user.Login)
+	if err != nil {
+		return false, err
+	}
+	passwordHash := getHash(user.Password)
+	isValid := repoUser.Password == passwordHash
+	return isValid, nil
 }

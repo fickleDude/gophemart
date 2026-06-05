@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/fickleDude/gophemart/internal/config/db"
@@ -16,7 +15,7 @@ import (
 func main() {
 	//enviroment
 	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
+		panic("No .env file found")
 	}
 	//repository
 	storage := db.GetDBConnection()

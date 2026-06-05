@@ -29,12 +29,12 @@ func (u *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	existingUser, err := u.service.GetUser(user.Login)
+	isValid, err := u.service.ValidateUser(user)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if user.Password != existingUser.Password {
+	if !isValid {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -43,24 +43,7 @@ func (u *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	token := &http.Cookie{
-		Name:     "token",
-		Value:    tokenString,
-		Path:     "/",
-		HttpOnly: true,                    // Доступ только через HTTP, защита от XSS
-		Secure:   true,                    // Только HTTPS
-		SameSite: http.SameSiteStrictMode, // Защита от CSRF
-	}
-	http.SetCookie(res, token)
-	login := &http.Cookie{
-		Name:     "user",
-		Value:    user.Login,
-		Path:     "/",
-		HttpOnly: true,                    // Доступ только через HTTP, защита от XSS
-		Secure:   true,                    // Только HTTPS
-		SameSite: http.SameSiteStrictMode, // Защита от CSRF
-	}
-	http.SetCookie(res, login)
+	helpers.SetCookie(res, "token", tokenString)
 }
 
 func (u *UserHandler) Register(res http.ResponseWriter, req *http.Request) {

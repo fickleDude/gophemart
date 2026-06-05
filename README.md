@@ -24,5 +24,5 @@ git fetch template && git checkout template/master .github
 
 Затем добавьте полученные изменения в свой репозиторий.
 
-Формат даты — RFC3339
-алгоритма Луна
+client retry
+secure cookie

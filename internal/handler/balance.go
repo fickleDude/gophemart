@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/service"
 )
 
@@ -17,12 +18,18 @@ func NewBalanceHandler(balanceService service.BalanceServiceInterface) *BalanceH
 }
 
 func (b *BalanceHandler) GetBalance(res http.ResponseWriter, req *http.Request) {
-	user, err := req.Cookie("user")
+	//get login from token
+	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	balance, err := b.balanceService.GetBalance(user.Value)
+	login := helpers.GetUserLogin(token.Value)
+	if err != nil {
+		res.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	balance, err := b.balanceService.GetBalance(login)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return

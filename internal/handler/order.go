@@ -20,12 +20,15 @@ func NewOrderHandler(orderService service.OrderServiceInterface) *OrderHandler {
 }
 
 func (o *OrderHandler) GetOrders(res http.ResponseWriter, req *http.Request) {
-	user, err := req.Cookie("user")
+	//get login from token
+	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	orders, error := o.orderService.GetOrders(user.Value)
+	login := helpers.GetUserLogin(token.Value)
+
+	orders, error := o.orderService.GetOrders(login)
 	if error != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -67,13 +70,15 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	user, err := req.Cookie("user")
+	//get login from token
+	token, err := helpers.GetCookie(req, "token")
 	if err != nil {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	login := helpers.GetUserLogin(token.Value)
 	if existingOrder != nil {
-		if existingOrder.Login == user.Value {
+		if existingOrder.Login == login {
 			res.WriteHeader(http.StatusOK)
 			return
 		} else {
@@ -83,7 +88,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//get status and accural form foreign service
-	order := model.Order{Login: user.Value, Number: string(number)}
+	order := model.Order{Login: login, Number: string(number)}
 	err = o.orderService.AddOrder(order)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)

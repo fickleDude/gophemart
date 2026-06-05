@@ -3,21 +3,35 @@ package helpers
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// change to os env
+const TOKEN_EXP = time.Hour * 3
+
+type Claims struct {
+	jwt.RegisteredClaims
+	UserLogin string
+}
+
 func getJwtSecret() (string, error) {
 	secret, exists := os.LookupEnv("AUTH_SECRET")
-	if exists {
+	if !exists {
 		return "", fmt.Errorf("secret not found")
 	}
 	return secret, nil
 }
 
 func CreateJWTToken(login string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"login": login})
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			// когда создан токен
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TOKEN_EXP)),
+		},
+		// собственное утверждение
+		UserLogin: login,
+	})
 	secretKey, err := getJwtSecret()
 	if err != nil {
 		return "", err
@@ -47,4 +61,20 @@ func ValidateJWTToken(tokenString string) error {
 		return nil
 	}
 	return jwt.ErrSignatureInvalid
+}
+
+func GetUserLogin(tokenString string) string {
+	// создаём экземпляр структуры с утверждениями
+	claims := &Claims{}
+	// парсим из строки токена tokenString в структуру claims
+	jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		secretKey, err := getJwtSecret()
+		if err != nil {
+			return "", err
+		}
+		return []byte(secretKey), nil
+	})
+
+	// возвращаем ID пользователя в читаемом виде
+	return claims.UserLogin
 }

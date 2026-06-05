@@ -24,3 +24,5 @@ CREATE TABLE internal_service (
 
 INSERT INTO users (login, password)
 VALUES ('123', 'abracadabra');
+INSERT INTO internal_service (order_num, status, accrual)
+VALUES ('9278923470', 'PROCESSED', 30);
