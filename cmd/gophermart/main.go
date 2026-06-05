@@ -57,6 +57,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.AuthenticationMiddleware)
+	r.Use(middleware.Gzip)
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/user", func(r chi.Router) {
 			//регистрация пользователя
