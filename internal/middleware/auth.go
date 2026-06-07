@@ -16,7 +16,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			err = helpers.ValidateJWTToken(cookie.Value)
+			err = helpers.ValidateJWTToken(cookie)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return

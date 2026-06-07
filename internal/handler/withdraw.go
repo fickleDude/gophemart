@@ -28,7 +28,7 @@ func (w *WithdrawHandler) GetWithdraws(res http.ResponseWriter, req *http.Reques
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	login := helpers.GetUserLogin(token.Value)
+	login := helpers.GetUserLogin(token)
 
 	withdraws, err := w.withdrawService.GetWithdraws(login)
 	if err != nil {
@@ -76,7 +76,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	login := helpers.GetUserLogin(token.Value)
+	login := helpers.GetUserLogin(token)
 
 	balance, err := w.balanceService.GetBalance(login)
 	if err != nil {

@@ -26,7 +26,7 @@ func (b *BalanceHandler) GetBalance(res http.ResponseWriter, req *http.Request) 
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	login := helpers.GetUserLogin(token.Value)
+	login := helpers.GetUserLogin(token)
 	balance, err := b.balanceService.GetBalance(login)
 	if err != nil {
 		logger.Log.Error(err.Error())

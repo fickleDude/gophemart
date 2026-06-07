@@ -28,7 +28,7 @@ func (o *OrderHandler) GetOrders(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	login := helpers.GetUserLogin(token.Value)
+	login := helpers.GetUserLogin(token)
 
 	orders, err := o.orderService.GetOrders(login)
 	if err != nil {
@@ -83,7 +83,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	login := helpers.GetUserLogin(token.Value)
+	login := helpers.GetUserLogin(token)
 	if existingOrder != nil {
 		if existingOrder.Login == login {
 			res.WriteHeader(http.StatusOK)

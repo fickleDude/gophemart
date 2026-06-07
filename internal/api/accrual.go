@@ -106,7 +106,7 @@ func GetOrderAccrual(number string, client http.Client) (*model.Order, error) {
 		defer response.Body.Close()
 		return &order, nil
 	case 204:
-		order.Status = "NEW"
+		order.Status = model.New
 	}
 	return &order, nil
 }
