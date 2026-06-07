@@ -2,10 +2,7 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"os"
-	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -22,10 +19,7 @@ var (
 
 func GetConfig() *Config {
 	initConfig.Do(func() {
-		config = &Config{
-			runAddr:              "localhost:8080",
-			accrualSystenAddress: "localhost:8090",
-		}
+		config = &Config{}
 		config.parseFlags()
 		config.parseEnv()
 	})
@@ -44,22 +38,9 @@ func (c *Config) AccrualSystenAddress() string {
 	return c.accrualSystenAddress
 }
 
-func checkRunAddr(addr string) error {
-	params := strings.Split(addr, ":")
-	if len(params) < 2 {
-		return fmt.Errorf("формат флага адрес:порт")
-	}
-	_, err := strconv.Atoi(params[1])
-	if err != nil {
-		return fmt.Errorf("порт указан некорректно")
-	}
-	return nil
-}
-
 func (c *Config) parseEnv() {
 	envAddr := os.Getenv("ADDRESS")
-	err := checkRunAddr(envAddr)
-	if err == nil {
+	if envAddr != "" {
 		c.runAddr = envAddr
 	}
 
@@ -69,30 +50,15 @@ func (c *Config) parseEnv() {
 	}
 
 	envAccrualSystenAddress := os.Getenv("ACCRUAL_SYSTEM_ADDRESS")
-	err = checkRunAddr(envAccrualSystenAddress)
-	if err == nil {
+	if envAccrualSystenAddress != "" {
 		c.accrualSystenAddress = envAccrualSystenAddress
 	}
 
 }
 
 func (c *Config) parseFlags() {
-	flag.Func("a", "адрес и порт запуска сервиса", func(flagAddr string) error {
-		err := checkRunAddr(flagAddr)
-		if err == nil {
-			c.runAddr = flagAddr
-
-		}
-		return nil
-	})
-	flag.StringVar(&c.databaseURI, "d", "host=localhost port=5433 user=postgres password=postgres dbname=gophermart sslmode=disable", "адрес подключения к базе данных")
-	flag.Func("r", "адрес системы расчёта начислений", func(flagAddr string) error {
-		err := checkRunAddr(flagAddr)
-		if err == nil {
-			c.accrualSystenAddress = flagAddr
-
-		}
-		return nil
-	})
+	flag.StringVar(&c.runAddr, "a", "", "адрес и порт запуска сервиса")
+	flag.StringVar(&c.databaseURI, "d", "", "адрес подключения к базе данных")
+	flag.StringVar(&c.accrualSystenAddress, "r", "", "адрес системы расчёта начислений")
 	flag.Parse()
 }
