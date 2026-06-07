@@ -1,10 +1,9 @@
 package helpers
 
 import (
-	"fmt"
-	"os"
 	"time"
 
+	"github.com/fickleDude/gophemart/internal/config"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -15,12 +14,9 @@ type Claims struct {
 	UserLogin string
 }
 
-func getJwtSecret() (string, error) {
-	secret, exists := os.LookupEnv("SECRET_KEY")
-	if !exists {
-		return "", fmt.Errorf("secret not found")
-	}
-	return secret, nil
+func getJwtSecret() string {
+	cfg := config.GetConfig()
+	return cfg.AuthKey()
 }
 
 func CreateJWTToken(login string) (string, error) {
@@ -32,10 +28,7 @@ func CreateJWTToken(login string) (string, error) {
 		// собственное утверждение
 		UserLogin: login,
 	})
-	secretKey, err := getJwtSecret()
-	if err != nil {
-		return "", err
-	}
+	secretKey := getJwtSecret()
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
@@ -48,10 +41,7 @@ func ValidateJWTToken(tokenString string) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
-		secretKey, err := getJwtSecret()
-		if err != nil {
-			return "", err
-		}
+		secretKey := getJwtSecret()
 		return []byte(secretKey), nil
 	})
 	if err != nil {
@@ -68,10 +58,7 @@ func GetUserLogin(tokenString string) string {
 	claims := &Claims{}
 	// парсим из строки токена tokenString в структуру claims
 	jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
-		secretKey, err := getJwtSecret()
-		if err != nil {
-			return "", err
-		}
+		secretKey := getJwtSecret()
 		return []byte(secretKey), nil
 	})
 

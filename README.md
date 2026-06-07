@@ -24,8 +24,9 @@ git fetch template && git checkout template/master .github
 
 Затем добавьте полученные изменения в свой репозиторий.
 
-client retry
 secure cookie
 key and log level to config
 status variable order
 delete internal
+db context
+log everything

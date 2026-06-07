@@ -12,26 +12,21 @@ import (
 	"github.com/fickleDude/gophemart/internal/repository"
 	"github.com/fickleDude/gophemart/internal/service"
 	"github.com/go-chi/chi"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	//config
-	if err := godotenv.Load(); err != nil {
-		panic("No .env file found")
-	}
-	//config
 	cfg := config.GetConfig()
 	//init logger
-	logLevel := "info"
+	logLevel := cfg.LogLevel()
 	if err := logger.Initialize(logLevel); err != nil {
 		panic(err)
 	}
 	defer logger.Log.Sync()
 
+	//init db
 	storage := db.GetDBConnection(cfg.DatabaseURI())
 	defer db.CloseDBConnection()
-	//init db
 	m := migrations.GetMigrator()
 	if m != nil {
 		err := m.MigrateUp()
