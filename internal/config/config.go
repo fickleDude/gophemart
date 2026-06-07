@@ -61,7 +61,7 @@ func (c *Config) LogLevel() string {
 
 func (c *Config) parseLocalEnv() {
 	if err := godotenv.Load(); err != nil {
-		panic("No .env file found")
+		logger.Log.Error("No .env file found")
 	}
 
 	envAuthKey := os.Getenv("SECRET_KEY")

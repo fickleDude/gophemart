@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/mocks"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/stretchr/testify/assert"
@@ -76,13 +77,17 @@ func TestOrderHandler_GetOrders(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			//create request
 			request := httptest.NewRequest(http.MethodGet, test.want.request, nil)
-			request.Header.Set("Authorization", test.user)
-			// создаём новый Recorder
+			//login
+			token, _ := helpers.CreateJWTToken(test.user)
+			helpers.SetRequestCookie(request, "token", token)
+			//add recorder
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(handler.GetOrders)
+			//execute
 			h(w, request)
-
+			//parse
 			res := w.Result()
 			// проверяем код ответа
 			assert.Equal(t, test.want.code, res.StatusCode)
@@ -103,19 +108,19 @@ func TestOrderHandler_AddOrders(t *testing.T) {
 	//init handler
 	service := mocks.MockOrderServiceInterface{}
 	//неверный формат номера заказа
-	service.On("ValidateOrder", "aaa").Return(fmt.Errorf("test"))
+	service.On("ValidateOrder", "aaa").Return(false)
 	//номер заказа уже был загружен другим пользователем
-	service.On("ValidateOrder", "1").Return(nil)
+	service.On("ValidateOrder", "1").Return(true)
 	service.On("GetOrder", "1").Return(&model.Order{Login: "1", Number: "1"}, nil)
 	//номер заказа уже был загружен этим пользователем
-	service.On("ValidateOrder", "2").Return(nil)
+	service.On("ValidateOrder", "2").Return(true)
 	service.On("GetOrder", "2").Return(&model.Order{Login: "4", Number: "2"}, nil)
 	//новый номер заказа принят в обработку
-	service.On("ValidateOrder", "3").Return(nil)
+	service.On("ValidateOrder", "3").Return(true)
 	service.On("GetOrder", "3").Return(nil, nil)
 	service.On("AddOrder", model.Order{Login: "2", Number: "3"}).Return(nil)
 	//внутренняя ошибка сервера
-	service.On("ValidateOrder", "4").Return(nil)
+	service.On("ValidateOrder", "4").Return(true)
 	service.On("GetOrder", "4").Return(nil, nil)
 	service.On("AddOrder", model.Order{Login: "5", Number: "4"}).Return(fmt.Errorf("test"))
 
@@ -200,13 +205,18 @@ func TestOrderHandler_AddOrders(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			request := httptest.NewRequest(http.MethodPost, test.want.request, strings.NewReader(test.want.requestBody))
-			request.Header.Set("Authorization", test.user)
+			//create request
+			request := httptest.NewRequest(http.MethodGet, test.want.request, strings.NewReader(test.want.requestBody))
 			request.Header.Set("Content-Type", test.want.requestContentType)
-			// создаём новый Recorder
+			//login
+			token, _ := helpers.CreateJWTToken(test.user)
+			helpers.SetRequestCookie(request, "token", token)
+			//add recorder
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(handler.AddOrders)
+			//execute
 			h(w, request)
+			//parse
 			res := w.Result()
 			// проверяем код ответа
 			assert.Equal(t, test.want.code, res.StatusCode)

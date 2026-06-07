@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/mocks"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/stretchr/testify/assert"
@@ -58,6 +59,9 @@ func TestBalanceHandler_GetBalance(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodGet, test.want.request, nil)
 			request.Header.Set("Authorization", test.user)
+			//login
+			token, _ := helpers.CreateJWTToken(test.user)
+			helpers.SetRequestCookie(request, "token", token)
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(handler.GetBalance)

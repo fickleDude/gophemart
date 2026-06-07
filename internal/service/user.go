@@ -8,6 +8,12 @@ import (
 	"github.com/fickleDude/gophemart/internal/repository"
 )
 
+type UserServiceInterface interface {
+	AddUser(user model.User) error
+	GetUser(login string) (*model.User, error)
+	ValidateUser(user model.User) (bool, error)
+}
+
 type UserService struct {
 	repository *repository.UserRepository
 }

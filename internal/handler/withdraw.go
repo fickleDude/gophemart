@@ -63,7 +63,7 @@ func (w *WithdrawHandler) AddWithdraw(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	isValid := helpers.LuhnAlgorithm(withdraw.Order)
+	isValid := w.withdrawService.ValidateOrder(withdraw.Order)
 	if !isValid {
 		res.WriteHeader(http.StatusUnprocessableEntity)
 		return

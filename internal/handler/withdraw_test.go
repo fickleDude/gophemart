@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/fickleDude/gophemart/internal/handler"
+	"github.com/fickleDude/gophemart/internal/helpers"
 	"github.com/fickleDude/gophemart/internal/mocks"
 	"github.com/fickleDude/gophemart/internal/model"
 	"github.com/stretchr/testify/assert"
@@ -79,6 +80,9 @@ func TestWithdrawHandler_GetWithdraws(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodGet, test.want.request, nil)
 			request.Header.Set("Authorization", test.user)
+			//login
+			token, _ := helpers.CreateJWTToken(test.user)
+			helpers.SetRequestCookie(request, "token", token)
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(handler.GetWithdraws)
@@ -104,8 +108,8 @@ func TestWithdrawHandler_AddWithdraw(t *testing.T) {
 	//init handler
 	withdrawService := mocks.MockWithdrawServiceInterface{}
 	balanceService := mocks.MockBalanceServiceInterface{}
-	withdrawService.On("ValidateOrder", "aaa").Return(fmt.Errorf("test"))
-	withdrawService.On("ValidateOrder", "1").Return(nil)
+	withdrawService.On("ValidateOrder", "aaa").Return(false)
+	withdrawService.On("ValidateOrder", "1").Return(true)
 	withdrawService.On("AddWithdraw", model.Withdraw{Login: "2", Order: "1", Sum: 751}).Return(nil)
 	balanceService.On("GetBalance", "1").Return(&model.Balance{Current: 0, Withdraw: 0}, nil)
 	balanceService.On("GetBalance", "2").Return(&model.Balance{Current: 1000, Withdraw: 0}, nil)
@@ -193,8 +197,10 @@ func TestWithdrawHandler_AddWithdraw(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, test.want.request, strings.NewReader(test.want.requestBody))
-			request.Header.Set("Authorization", test.user)
 			request.Header.Set("Content-Type", test.want.requestContentType)
+			//login
+			token, _ := helpers.CreateJWTToken(test.user)
+			helpers.SetRequestCookie(request, "token", token)
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(handler.AddWithdraw)

@@ -64,7 +64,7 @@ func (o *OrderHandler) AddOrders(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	isValid := helpers.LuhnAlgorithm(string(number))
+	isValid := o.orderService.ValidateOrder(string(number))
 	if !isValid {
 		res.WriteHeader(http.StatusUnprocessableEntity)
 		return

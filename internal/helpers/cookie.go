@@ -10,7 +10,22 @@ var hashKey = securecookie.GenerateRandomKey(64)
 var blockKey = securecookie.GenerateRandomKey(32)
 var s = securecookie.New(hashKey, blockKey)
 
-func SetCookie(res http.ResponseWriter, name string, value string) {
+func SetRequestCookie(request *http.Request, name string, value string) {
+
+	if encoded, err := s.Encode(name, value); err == nil {
+		cookie := &http.Cookie{
+			Name:     name,
+			Value:    encoded,
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		}
+		request.AddCookie(cookie)
+	}
+}
+
+func SetResponseCookie(res http.ResponseWriter, name string, value string) {
 
 	if encoded, err := s.Encode(name, value); err == nil {
 		cookie := &http.Cookie{

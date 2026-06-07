@@ -11,10 +11,10 @@ import (
 )
 
 type UserHandler struct {
-	service *service.UserService
+	service service.UserServiceInterface
 }
 
-func NewUserHandler(service *service.UserService) *UserHandler {
+func NewUserHandler(service service.UserServiceInterface) *UserHandler {
 	return &UserHandler{service: service}
 }
 
@@ -47,7 +47,7 @@ func (u *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	helpers.SetCookie(res, "token", tokenString)
+	helpers.SetResponseCookie(res, "token", tokenString)
 }
 
 func (u *UserHandler) Register(res http.ResponseWriter, req *http.Request) {
