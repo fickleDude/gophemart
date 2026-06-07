@@ -11,8 +11,7 @@ import (
 
 func GetOrderAccrual(number string, client http.Client) (*model.Order, error) {
 	cfg := config.GetConfig()
-	baseURL := fmt.Sprintf("http://%s/api/orders", cfg.AccrualSystenAddress())
-	url := fmt.Sprintf("%s/%s", baseURL, number)
+	url := fmt.Sprintf("%s/api/orders/%s", cfg.AccrualSystenAddress(), number)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -23,7 +22,7 @@ func GetOrderAccrual(number string, client http.Client) (*model.Order, error) {
 	}
 	var order model.Order
 	switch response.StatusCode {
-case 200:
+	case 200:
 		if err := json.NewDecoder(response.Body).Decode(&order); err != nil {
 			return nil, err
 		}

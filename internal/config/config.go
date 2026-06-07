@@ -19,7 +19,11 @@ var (
 
 func GetConfig() *Config {
 	initConfig.Do(func() {
-		config = &Config{}
+		config = &Config{
+			runAddr:              "localhost:8080",
+			databaseURI:          "postgres://postgres:postgres@localhost:5433/gophermart?sslmode=disable",
+			accrualSystenAddress: "localhost:8090",
+		}
 		config.parseFlags()
 		config.parseEnv()
 	})
@@ -39,7 +43,7 @@ func (c *Config) AccrualSystenAddress() string {
 }
 
 func (c *Config) parseEnv() {
-	envAddr := os.Getenv("ADDRESS")
+	envAddr := os.Getenv("RUN_ADDRESS")
 	if envAddr != "" {
 		c.runAddr = envAddr
 	}
@@ -53,12 +57,11 @@ func (c *Config) parseEnv() {
 	if envAccrualSystenAddress != "" {
 		c.accrualSystenAddress = envAccrualSystenAddress
 	}
-
 }
 
 func (c *Config) parseFlags() {
-	flag.StringVar(&c.runAddr, "a", "", "адрес и порт запуска сервиса")
-	flag.StringVar(&c.databaseURI, "d", "", "адрес подключения к базе данных")
-	flag.StringVar(&c.accrualSystenAddress, "r", "", "адрес системы расчёта начислений")
+	flag.StringVar(&c.runAddr, "a", c.runAddr, "адрес и порт запуска сервиса")
+	flag.StringVar(&c.databaseURI, "d", c.databaseURI, "адрес подключения к базе данных")
+	flag.StringVar(&c.accrualSystenAddress, "r", c.accrualSystenAddress, "адрес системы расчёта начислений")
 	flag.Parse()
 }
