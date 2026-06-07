@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/fickleDude/gophemart/internal/helpers"
+	"github.com/fickleDude/gophemart/internal/api"
 	model "github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
 )
@@ -36,7 +36,7 @@ func (o *OrderService) GetOrders(login string) ([]*model.Order, error) {
 	}
 	client := http.Client{}
 	for _, o := range orders {
-		orderDetails, err := helpers.GetOrderAccrual(o.Number, client)
+		orderDetails, err := api.GetOrderAccrual(o.Number, client)
 		if err != nil {
 			return nil, err
 		}

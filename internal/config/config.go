@@ -22,7 +22,7 @@ func GetConfig() *Config {
 		config = &Config{
 			runAddr:              "localhost:8080",
 			databaseURI:          "postgres://postgres:postgres@localhost:5433/gophermart?sslmode=disable",
-			accrualSystenAddress: "localhost:8090",
+			accrualSystenAddress: "http://localhost:8090",
 		}
 		config.parseFlags()
 		config.parseEnv()

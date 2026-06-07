@@ -3,7 +3,7 @@ package service
 import (
 	"net/http"
 
-	"github.com/fickleDude/gophemart/internal/helpers"
+	"github.com/fickleDude/gophemart/internal/api"
 	model "github.com/fickleDude/gophemart/internal/model"
 	"github.com/fickleDude/gophemart/internal/repository"
 )
@@ -38,7 +38,7 @@ func (b *BalanceService) GetBalance(login string) (*model.Balance, error) {
 	accrual := 0.0
 	client := http.Client{}
 	for _, o := range orders {
-		orderDetails, err := helpers.GetOrderAccrual(o.Number, client)
+		orderDetails, err := api.GetOrderAccrual(o.Number, client)
 		if err != nil {
 			return nil, err
 		}
