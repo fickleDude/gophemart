@@ -18,10 +18,10 @@ type OrderServiceInterface interface {
 }
 
 type OrderService struct {
-	repository *repository.OrderRepository
+	repository repository.OrderRepositoryInterface
 }
 
-func NewOrderService(repository *repository.OrderRepository) *OrderService {
+func NewOrderService(repository repository.OrderRepositoryInterface) *OrderService {
 	return &OrderService{repository: repository}
 }
 

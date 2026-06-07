@@ -15,10 +15,10 @@ type WithdrawServiceInterface interface {
 }
 
 type WithdrawService struct {
-	repository *repository.WithdrawRepository
+	repository repository.WithdrawRepositoryInterface
 }
 
-func NewWithdrawService(repository *repository.WithdrawRepository) *WithdrawService {
+func NewWithdrawService(repository repository.WithdrawRepositoryInterface) *WithdrawService {
 	return &WithdrawService{repository: repository}
 }
 

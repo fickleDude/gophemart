@@ -13,11 +13,11 @@ type BalanceServiceInterface interface {
 }
 
 type BalanceService struct {
-	orderRepository    *repository.OrderRepository
-	withdrawRepository *repository.WithdrawRepository
+	orderRepository    repository.OrderRepositoryInterface
+	withdrawRepository repository.WithdrawRepositoryInterface
 }
 
-func NewBalaneService(orderRepository *repository.OrderRepository, withdrawRepository *repository.WithdrawRepository) *BalanceService {
+func NewBalaneService(orderRepository repository.OrderRepositoryInterface, withdrawRepository repository.WithdrawRepositoryInterface) *BalanceService {
 	return &BalanceService{orderRepository: orderRepository, withdrawRepository: withdrawRepository}
 }
 

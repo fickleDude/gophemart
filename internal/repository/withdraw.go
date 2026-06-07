@@ -6,6 +6,11 @@ import (
 	"github.com/fickleDude/gophemart/internal/model"
 )
 
+type WithdrawRepositoryInterface interface {
+	GetWithdraws(login string) ([]*model.Withdraw, error)
+	AddWithdraw(login string, order string, sum float64, processedAt string) error
+}
+
 type WithdrawRepository struct {
 	db *sql.DB
 }

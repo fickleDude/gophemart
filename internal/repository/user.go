@@ -7,6 +7,11 @@ import (
 	model "github.com/fickleDude/gophemart/internal/model"
 )
 
+type UserRepositoryInterface interface {
+	AddUser(login string, password string) error
+	GetUser(login string) (*model.User, error)
+}
+
 type UserRepository struct {
 	db *sql.DB
 }

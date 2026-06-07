@@ -7,6 +7,12 @@ import (
 	model "github.com/fickleDude/gophemart/internal/model"
 )
 
+type OrderRepositoryInterface interface {
+	GetOrder(number string) (*model.Order, error)
+	GetOrders(login string) ([]*model.Order, error)
+	AddOrder(login string, number string, uploadedAt string) error
+}
+
 type OrderRepository struct {
 	db *sql.DB
 }
